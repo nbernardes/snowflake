@@ -116,3 +116,13 @@ Comparison:
 snowflake       316.51 K
 snowflakex      296.26 K - 1.07x slower
 ```
+
+## Attribution
+
+Forked from [blitzstudios/snowflake].
+
+Some code ported from [Sonato/snowflake].
+
+[blitzstudios/snowflake]: https://github.com/blitzstudios/snowflake
+[sonato/snowflake]: https://github.com/Sonato/snowflake
+[blitz studios, inc.]: https://github.com/blitzstudios
