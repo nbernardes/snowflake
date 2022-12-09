@@ -13,34 +13,39 @@ env:
 jobs:
   lint:
     runs-on: ubuntu-latest
+    name: OTP ${{matrix.otp}} / Elixir ${{matrix.elixir}}
+    strategy:
+      matrix:
+        otp: ['25.0']
+        elixir: ['1.13.4', '1.14.2']
 
     steps:
       - uses: actions/checkout@v2
 
       - uses: erlef/setup-elixir@v1
         with:
-          elixir-version: ${{ steps.versions.outputs.elixir }}
-          otp-version: ${{ steps.versions.outputs.erlang }}
+          otp-version: ${{matrix.otp}}
+          elixir-version: ${{matrix.elixir}}
 
       - name: 'deps cache'
         uses: actions/cache@v3
         with:
           path: deps
-          key: test-deps-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          key: lint-deps-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
           restore-keys: |
-            test-deps-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
-            test-deps-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-
-            test-deps-${{env.CACHE_VERSION}}-
+            lint-deps-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+            lint-deps-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-
+            lint-deps-${{env.CACHE_VERSION}}-
 
       - name: '_build cache'
         uses: actions/cache@v3
         with:
           path: _build
-          key: test-build-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          key: lint-build-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
           restore-keys: |
-            test-build-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
-            test-build-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-
-            test-build-${{env.CACHE_VERSION}}-
+            lint-build-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+            lint-build-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-
+            lint-build-${{env.CACHE_VERSION}}-
 
       - run: mix deps.get
       - run: mix format --check-formatted
