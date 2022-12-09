@@ -1,5 +1,7 @@
 # Snowflake
 
+[![build](https://github.com/avenueplace/snowflake/actions/workflows/build.yml/badge.svg)](https://github.com/avenueplace/snowflake/actions/workflows/build.yml)
+
 > This project was forked from [blitzstudios/snowflake] and its maintenance is
 > focused on our internal usage at Avenue. Feel free to use it as is, and reach
 > out to us through an issue or pull-request. We'll gladly consider your
