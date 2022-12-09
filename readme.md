@@ -1,5 +1,10 @@
 # Snowflake
 
+> This project was forked from [blitzstudios/snowflake] and its maintenance is
+> focused on our internal usage at Avenue. Feel free to use it as is, and reach
+> out to us through an issue or pull-request. We'll gladly consider your
+> suggestions and contributions.
+
 A scalable, decentralized Snowflake generator in Elixir.
 
 ## Usage
@@ -8,9 +13,12 @@ In your mix.exs file:
 
 ```elixir
 def deps do
-  [{:snowflake, "~> 1.0.0"}]
+  [{:snowflake, github: "avenueplace/snowflake", tag: "v1.0.5"}]
 end
 ```
+
+If you're using Elixir v1.3 or earlier, add the following to your `mix.exs`
+file.
 
 ```elixir
 def application do
@@ -18,7 +26,7 @@ def application do
 end
 ```
 
-Specify the nodes in your config.  If you're running a cluster, specify all the nodes in the cluster that snowflake runs on.  
+Specify the nodes in your config. If you're running a cluster, specify all the nodes in the cluster that snowflake runs on.
 
 - **nodes** can be Erlang Node Names, Public IPs, Private IPs, Hostnames, or FQDNs
 - **epoch** should not be changed once you begin generating IDs and want to maintain sorting
@@ -52,6 +60,7 @@ For example, deriving a bucket number from a snowflake to use as part of a
 composite key in Cassandra in the attempt to limit partition size.
 
 Lets say we want to know the current bucket for an ID that would be generated right now:
+
 ```elixir
 Snowflake.Util.bucket(30, :days)
 # => 5
@@ -59,18 +68,21 @@ Snowflake.Util.bucket(30, :days)
 
 Or if we want to know which bucket a snowflake ID should belong to, given we are
 bucketing by every 30 days.
+
 ```elixir
 Snowflake.Util.bucket(30, :days, 54974240033603584)
 # => 5
 ```
 
 Or if we want to know how many ms elapsed from epoch
+
 ```elixir
 Snowflake.Util.timestamp_of_id(54974240033603584)
 # => 197588482172
 ```
 
-Or if we want to know how many ms elapsed from computer epoch (January 1, 1970 midnight).  We can use this to derive an actual calendar date.
+Or if we want to know how many ms elapsed from computer epoch (January 1, 1970 midnight). We can use this to derive an actual calendar date.
+
 ```elixir
 Snowflake.Util.real_timestamp_of_id(54974240033603584)
 # => 1486669389497
@@ -79,14 +91,14 @@ Snowflake.Util.real_timestamp_of_id(54974240033603584)
 ## NTP
 
 Keep your nodes in sync with [ntpd](https://en.wikipedia.org/wiki/Ntpd) or use
-your VM equivalent as snowflake depends on OS time.  ntpd's job is to slow down
+your VM equivalent as snowflake depends on OS time. ntpd's job is to slow down
 or speed up the clock so that it syncs os time with your network time.
 
 ## Architecture
 
-Snowflake allows the user to specify the nodes in the cluster, each representing a machine.  Snowflake at startup inspects itself for Node, IP and Host information and derives its machine_id from the location of itself in the list of nodes defined in the config.
+Snowflake allows the user to specify the nodes in the cluster, each representing a machine. Snowflake at startup inspects itself for Node, IP and Host information and derives its machine_id from the location of itself in the list of nodes defined in the config.
 
-Machine ID is defaulted to **1023** if snowflake is not able to find itself within the specified config.  It is important to specify the correct IPs / Hostnames / FQDNs for the nodes in a production environment to avoid any chance of snowflake collision.
+Machine ID is defaulted to **1023** if snowflake is not able to find itself within the specified config. It is important to specify the correct IPs / Hostnames / FQDNs for the nodes in a production environment to avoid any chance of snowflake collision.
 
 ## Benchmarks
 
