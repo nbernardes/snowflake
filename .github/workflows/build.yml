@@ -1,0 +1,46 @@
+name: build
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    types: [opened, synchronize]
+
+env:
+  CACHE_VERSION: 1
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: erlef/setup-elixir@v1
+        with:
+          elixir-version: ${{ steps.versions.outputs.elixir }}
+          otp-version: ${{ steps.versions.outputs.erlang }}
+
+      - name: 'deps cache'
+        uses: actions/cache@v3
+        with:
+          path: deps
+          key: test-deps-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            test-deps-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+            test-deps-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-
+            test-deps-${{env.CACHE_VERSION}}-
+
+      - name: '_build cache'
+        uses: actions/cache@v3
+        with:
+          path: _build
+          key: test-build-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: |
+            test-build-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+            test-build-${{env.CACHE_VERSION}}-${{ runner.os }}-mix-
+            test-build-${{env.CACHE_VERSION}}-
+
+      - run: mix deps.get
+      - run: mix format --check-formatted
