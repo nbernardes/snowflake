@@ -1,7 +1,7 @@
 defmodule Snowflake.Mixfile do
   use Mix.Project
 
-  @version "1.0.4"
+  @version "1.0.5"
   @url "https://github.com/blitzstudios/snowflake"
   @maintainers ["Weixi Yen"]
 
@@ -15,7 +15,7 @@ defmodule Snowflake.Mixfile do
       start_permanent: Mix.env() == :prod,
       maintainers: @maintainers,
       description: "Elixir Snowflake ID Generator",
-      elixir: "~> 1.3",
+      elixir: "~> 1.7",
       package: package(),
       homepage_url: @url,
       docs: docs(),
