@@ -9,6 +9,10 @@ defmodule Snowflake.Adapter.Generator do
   # Public API
   #
 
+  def start_link([epoch, machine_id]) do
+    start_link(epoch, machine_id)
+  end
+
   def start_link(epoch, machine_id) do
     state = {epoch, Snowflake.Util.ts(epoch), machine_id, 0}
     GenServer.start_link(__MODULE__, state, name: __MODULE__)
