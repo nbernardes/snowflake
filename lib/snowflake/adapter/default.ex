@@ -1,32 +1,41 @@
-defmodule Snowflake.Generator do
+defmodule Snowflake.Adapter.Generator do
   @moduledoc false
   use GenServer
+  use Snowflake.Adapter
 
-  @machine_id_overflow 1024
   @seq_overflow 4096
 
-  def start_link([epoch, machine_id]) when machine_id < @machine_id_overflow do
+  #
+  # Public API
+  #
+
+  def start_link(epoch, machine_id) do
     state = {epoch, ts(epoch), machine_id, 0}
     GenServer.start_link(__MODULE__, state, name: __MODULE__)
   end
+
+  def next_id do
+    GenServer.call(__MODULE__, :next_id)
+  end
+
+  def machine_id do
+    GenServer.call(__MODULE__, :machine_id)
+  end
+
+  def set_machine_id(machine_id) do
+    GenServer.call(__MODULE__, {:set_machine_id, machine_id})
+  end
+
+  #
+  # Callbacks
+  #
 
   def init(args) do
     {:ok, args}
   end
 
-  def handle_call(:next_id, from, {epoch, prev_ts, machine_id, seq} = state) do
-    case next_ts_and_seq(epoch, prev_ts, seq) do
-      {:error, :seq_overflow} ->
-        :timer.sleep(1)
-        handle_call(:next_id, from, state)
-
-      {:error, :backwards_clock} ->
-        {:reply, {:error, :backwards_clock}, state}
-
-      {:ok, new_ts, new_seq} ->
-        new_state = {epoch, new_ts, machine_id, new_seq}
-        {:reply, {:ok, create_id(new_ts, machine_id, new_seq)}, new_state}
-    end
+  def handle_call(:next_id, from, {epoch, prev_ts, machine_id, seq}) do
+    do_next_id(from, epoch, prev_ts, machine_id, seq)
   end
 
   def handle_call(:machine_id, _from, {_epoch, _prev_ts, machine_id, _seq} = state) do
@@ -35,6 +44,25 @@ defmodule Snowflake.Generator do
 
   def handle_call({:set_machine_id, machine_id}, _from, {epoch, prev_ts, _old_machine_id, seq}) do
     {:reply, {:ok, machine_id}, {epoch, prev_ts, machine_id, seq}}
+  end
+
+  #
+  # Private API
+  #
+
+  defp do_next_id(from, epoch, prev_ts, machine_id, seq) do
+    case next_ts_and_seq(epoch, prev_ts, seq) do
+      {:error, :seq_overflow} ->
+        :timer.sleep(1)
+        do_next_id(from, epoch, prev_ts, machine_id, seq)
+
+      {:error, :backwards_clock} ->
+        {:reply, {:error, :backwards_clock}, {epoch, prev_ts, machine_id, seq}}
+
+      {:ok, new_ts, new_seq} ->
+        new_state = {epoch, new_ts, machine_id, new_seq}
+        {:reply, {:ok, create_id(new_ts, machine_id, new_seq)}, new_state}
+    end
   end
 
   defp next_ts_and_seq(epoch, prev_ts, seq) do

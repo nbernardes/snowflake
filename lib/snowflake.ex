@@ -21,9 +21,12 @@ defmodule Snowflake do
   @type epoch_timestamp :: non_neg_integer
 
   def start(_type, _args) do
-    children = [
-      {Snowflake.Generator, [Snowflake.Helper.epoch(), Snowflake.Helper.machine_id()]}
-    ]
+    children =
+      if adapter().startable?() do
+        [{adapter(), [Snowflake.Helper.epoch(), Snowflake.Helper.machine_id()]}]
+      else
+        []
+      end
 
     Supervisor.start_link(children, strategy: :one_for_one)
   end
@@ -32,17 +35,17 @@ defmodule Snowflake do
   Generates a snowflake ID, each call is guaranteed to return a different ID
   that is sequentially larger than the previous ID.
   """
-  @spec next_id() :: {:ok, t} | {:error, :backwards_clock}
-  def next_id() do
-    GenServer.call(Snowflake.Generator, :next_id)
+  @spec next_id :: {:ok, t} | {:error, :backwards_clock}
+  def next_id do
+    adapter().next_id()
   end
 
   @doc """
   Returns the machine id of the current node.
   """
-  @spec machine_id() :: {:ok, integer}
-  def machine_id() do
-    GenServer.call(Snowflake.Generator, :machine_id)
+  @spec machine_id :: {:ok, integer}
+  def machine_id do
+    adapter().machine_id()
   end
 
   @doc """
@@ -50,6 +53,10 @@ defmodule Snowflake do
   """
   @spec set_machine_id(integer) :: {:ok, integer}
   def set_machine_id(machine_id) do
-    GenServer.call(Snowflake.Generator, {:set_machine_id, machine_id})
+    adapter().set_machine_id(machine_id)
+  end
+
+  defp adapter do
+    Application.get_env(:snowflake, :adapter, Snowflake.Adapter.Generator)
   end
 end

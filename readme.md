@@ -48,6 +48,16 @@ config :snowflake,
   epoch: 1142974214000  # don't change after you decide what your epoch is
 ```
 
+You can also use the `adapter` option, which would allow you to use a separate
+adapter to generate the Snowflakes. In Avenue's case, starting and killing the
+Snowflake generator was causing unwanted delays in the test runs so we added a
+`Snowflake.Adapter.Inline` adapter for testing purposes
+
+```elixir
+config :snowflake,
+  adapter: Snowflake.Adapter.Inline # Only use this for testing purposes
+```
+
 Generating an ID is simple.
 
 ```elixir
@@ -118,6 +128,18 @@ Comparison:
 snowflake       316.51 K
 snowflakex      296.26 K - 1.07x slower
 ```
+
+## Differences from [blitzstudios/snowflake]
+
+This is a list of differences based on the internal usage at Avenue. Most, if
+not all of these, have been made into pull requests. If and when they have been
+merged, we urge everyone to use [blitzstudios/snowflake]:
+
+- Added support for an inline adapter.
+- [#5 - Adds semantic typing information](https://github.com/blitzstudios/snowflake/pull/5) - by [@Sonato](https://github.com/Sonato)
+- [#8 - Run mix formatter](https://github.com/blitzstudios/snowflake/pull/8)
+- [#9 - Remove deprecated Supervisor.Spec](https://github.com/blitzstudios/snowflake/pull/9)
+- [#10 - import Config instead of the deprecated Mix.Config](https://github.com/blitzstudios/snowflake/pull/10)
 
 ## Attribution
 
