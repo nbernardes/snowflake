@@ -5,13 +5,15 @@ defmodule Snowflake.Adapter.Inline do
   def startable?, do: false
 
   @impl true
-  def next_id, do: {:ok, random()}
+  def next_id, do: {:ok, ts()}
 
   @impl true
-  def machine_id, do: {:ok, random()}
+  def machine_id, do: {:ok, ts()}
 
   @impl true
   def set_machine_id(id), do: {:ok, id}
 
-  defp random, do: :rand.uniform(1_000_000_000)
+  defp ts do
+    System.os_time(:nanosecond) - Snowflake.Helper.epoch()
+  end
 end

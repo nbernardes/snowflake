@@ -10,6 +10,22 @@ defmodule Snowflake.Util do
   use Bitwise
 
   @doc """
+  Returns the timestamp in millis. Uses `System.os_time/1`.
+  """
+  @spec ts :: integer
+  def ts do
+    Snowflake.Helper.epoch()
+    |> ts()
+  end
+
+  @doc """
+  Returns the timestamp in millis from the machine epoch. Uses `System.os_time/1`.
+  """
+  def ts(epoch) do
+    System.os_time(:millisecond) - epoch
+  end
+
+  @doc """
   First Snowflake for timestamp, useful if you have a timestamp and want
   to find snowflakes before or after a certain millisecond
   """

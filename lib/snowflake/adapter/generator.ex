@@ -10,7 +10,7 @@ defmodule Snowflake.Adapter.Generator do
   #
 
   def start_link(epoch, machine_id) do
-    state = {epoch, ts(epoch), machine_id, 0}
+    state = {epoch, Snowflake.Util.ts(epoch), machine_id, 0}
     GenServer.start_link(__MODULE__, state, name: __MODULE__)
   end
 
@@ -66,7 +66,7 @@ defmodule Snowflake.Adapter.Generator do
   end
 
   defp next_ts_and_seq(epoch, prev_ts, seq) do
-    case ts(epoch) do
+    case Snowflake.Util.ts(epoch) do
       ^prev_ts ->
         case seq + 1 do
           @seq_overflow -> {:error, :seq_overflow}
@@ -89,9 +89,5 @@ defmodule Snowflake.Adapter.Generator do
     >>
 
     new_id
-  end
-
-  defp ts(epoch) do
-    System.os_time(:millisecond) - epoch
   end
 end
