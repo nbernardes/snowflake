@@ -1,10 +1,10 @@
 # Snowflake
 
-[![build](https://github.com/avenueplace/snowflake/actions/workflows/build.yml/badge.svg)](https://github.com/avenueplace/snowflake/actions/workflows/build.yml)
+[![build](https://github.com/frm/snowflake/actions/workflows/build.yml/badge.svg)](https://github.com/frm/snowflake/actions/workflows/build.yml)
 
 > This project was forked from [blitzstudios/snowflake] and its maintenance is
-> focused on our internal usage at Avenue. Feel free to use it as is, and reach
-> out to us through an issue or pull-request. We'll gladly consider your
+> focused on my personal and professional usage. Feel free to use it as is, and
+> reach out through an issue or pull-request. I'll gladly consider your
 > suggestions and contributions.
 
 A scalable, decentralized Snowflake generator in Elixir.
@@ -15,7 +15,7 @@ In your mix.exs file:
 
 ```elixir
 def deps do
-  [{:snowflake, github: "avenueplace/snowflake", tag: "v1.0.5"}]
+  [{:snowflake, github: "frm/snowflake", tag: "v1.0.5"}]
 end
 ```
 
@@ -49,8 +49,8 @@ config :snowflake,
 ```
 
 You can also use the `adapter` option, which would allow you to use a separate
-adapter to generate the Snowflakes. In Avenue's case, starting and killing the
-Snowflake generator was causing unwanted delays in the test runs so we added a
+adapter to generate the Snowflakes. In my project's case, starting and killing the
+Snowflake generator was causing unwanted delays in the test runs so I added a
 `Snowflake.Adapter.Inline` adapter for testing purposes
 
 ```elixir
@@ -71,14 +71,14 @@ After generating snowflake IDs, you may want to use them to do other things.
 For example, deriving a bucket number from a snowflake to use as part of a
 composite key in Cassandra in the attempt to limit partition size.
 
-Lets say we want to know the current bucket for an ID that would be generated right now:
+Lets say I want to know the current bucket for an ID that would be generated right now:
 
 ```elixir
 Snowflake.Util.bucket(30, :days)
 # => 5
 ```
 
-Or if we want to know which bucket a snowflake ID should belong to, given we are
+Or if I want to know which bucket a snowflake ID should belong to, given I are
 bucketing by every 30 days.
 
 ```elixir
@@ -86,14 +86,14 @@ Snowflake.Util.bucket(30, :days, 54974240033603584)
 # => 5
 ```
 
-Or if we want to know how many ms elapsed from epoch
+Or if I want to know how many ms elapsed from epoch
 
 ```elixir
 Snowflake.Util.timestamp_of_id(54974240033603584)
 # => 197588482172
 ```
 
-Or if we want to know how many ms elapsed from computer epoch (January 1, 1970 midnight). We can use this to derive an actual calendar date.
+Or if I want to know how many ms elapsed from computer epoch (January 1, 1970 midnight). We can use this to derive an actual calendar date.
 
 ```elixir
 Snowflake.Util.real_timestamp_of_id(54974240033603584)
@@ -131,9 +131,9 @@ snowflakex      296.26 K - 1.07x slower
 
 ## Differences from [blitzstudios/snowflake]
 
-This is a list of differences based on the internal usage at Avenue. Most, if
-not all of these, have been made into pull requests. If and when they have been
-merged, we urge everyone to use [blitzstudios/snowflake]:
+This is a list of differences based on the internal usage in several of my
+projects. Most, if not all of these, have been made into pull requests. If and
+when they have been merged, I urge everyone to use [blitzstudios/snowflake]:
 
 - Added support for an inline adapter.
 - [#5 - Adds semantic typing information](https://github.com/blitzstudios/snowflake/pull/5) - by [@Sonato](https://github.com/Sonato)
